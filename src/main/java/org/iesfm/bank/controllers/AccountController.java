@@ -56,11 +56,15 @@ public class AccountController {
     @RequestMapping(method = RequestMethod.POST, path = "/customers/{id}/accounts")
     public void insert(@RequestBody Account account){
       if (customerRepository.existsById(account.getOwnerId())){
-          accountRepository.save(account);
+          if (accountRepository.existsById(account.getIban())){
+              throw new ResponseStatusException(HttpStatus.CONFLICT, "la cuenta ya existe");
+          } else {
+              accountRepository.save(account);
+          }
       } else {
           throw new ResponseStatusException(HttpStatus.NOT_FOUND, "el cliente no existe");
       }
     }
-    
+
 
 }
