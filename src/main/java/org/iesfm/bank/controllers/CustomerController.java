@@ -4,6 +4,7 @@ import org.iesfm.bank.Customer;
 import org.iesfm.bank.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -31,19 +32,18 @@ public class CustomerController {
 
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, path = "/customers/{id}")
-    public void delete(@PathVariable("id") int id) {
-        if (!customerRepository.existsById(id)) {
+    @Transactional
+    @RequestMapping(method = RequestMethod.DELETE, path = "/customers/{nif}")
+    public void delete(@PathVariable("nif") String nif) {
+        if (customerRepository.deleteByNif(nif) == 0) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "El cliente no existe");
-        } else {
-            customerRepository.deleteById(id);
         }
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = "/customers/{id}")
-    public Optional<Customer> getCustomer(@PathVariable("id") int id) {
-        Optional<Customer> customer = customerRepository.findById(id);
-        if (customer.isEmpty()) {
+    @RequestMapping(method = RequestMethod.GET, path = "/customers/{nif}")
+    public Customer getCustomer(@PathVariable("nif") String nif) {
+        Customer customer = customerRepository.findOneByNif(nif);
+        if (customer == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe el cliente");
         }
         return customer;

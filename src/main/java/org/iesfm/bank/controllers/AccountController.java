@@ -43,14 +43,9 @@ public class AccountController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = "/customers/{id}/accunts")
-    public List<Account> getAccountsByCustomer(@PathVariable int id) {
-        Optional<Customer> customer = customerRepository.findById(id);
-        if (customer.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "no existe el cliente");
-        } else {
-            return accountRepository.findByOwnerId(id);
-        }
+    @RequestMapping(method = RequestMethod.GET, path = "/customers/{nif}/accounts")
+    public List<Account> getAccountsByCustomer(@PathVariable("nif") String customerNif) {
+        return accountRepository.findByNif(customerNif);
     }
 
     @RequestMapping(method = RequestMethod.POST, path = "/customers/{id}/accounts")
